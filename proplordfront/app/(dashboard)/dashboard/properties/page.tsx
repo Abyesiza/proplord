@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { getProperties } from "@/lib/data";
-import { location } from "@/lib/format";
+import { location, propertyTypeLabel } from "@/lib/format";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Properties | Proplord" };
@@ -57,8 +57,9 @@ export default async function PropertiesPage() {
                   {p.name}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">{location(p)}</p>
-                <div className="mt-5 flex gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   <Badge variant="accent">{p.units[0]?.count ?? 0} units</Badge>
+                  <Badge variant="outline">{propertyTypeLabel(p.propertyType)}</Badge>
                   <Badge variant="outline">{p.currency}</Badge>
                 </div>
               </Link>

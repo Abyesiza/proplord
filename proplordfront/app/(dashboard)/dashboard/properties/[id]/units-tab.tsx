@@ -6,12 +6,12 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Field } from "@/components/ui/form";
 import { Table, Td } from "@/components/ui/table";
-import { money } from "@/lib/format";
+import { amountStep, money } from "@/lib/format";
 import type { PropertyDetail } from "@/lib/types";
 
 export function UnitsTab({ property }: { property: PropertyDetail }) {
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_22rem]">
+    <div className="space-y-5">
       <Card>
         <CardHeader title="Units" description="Apartments, rooms or shops in this property" />
         {property.units.length === 0 ? (
@@ -37,9 +37,9 @@ export function UnitsTab({ property }: { property: PropertyDetail }) {
 
       <Card>
         <CardHeader title="Add a unit" />
-        <ActionForm action={createUnit.bind(null, property.id)} submitLabel="Add unit">
+        <ActionForm action={createUnit.bind(null, property.id)} submitLabel="Add unit" columns={2}>
           <Field label="Unit name" name="name" placeholder="Unit 4B" />
-          <Field label="Monthly rent" name="rentAmount" type="number" step="0.01" min="0" />
+          <Field label={`Monthly rent (${property.currency})`} name="rentAmount" type="number" step={amountStep(property.currency)} min="0" />
         </ActionForm>
       </Card>
     </div>

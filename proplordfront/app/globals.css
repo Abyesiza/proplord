@@ -21,11 +21,16 @@
   --ring: 330 100% 56%;
   /* Darker pink for small text on light surfaces (4.5:1). */
   --link: 330 100% 38%;
+  /* Eyebrow text and gradient end on the hero; yellow only reads on dark surfaces. */
+  --eyebrow: 330 100% 38%;
+  --gradient-end: 45 100% 45%;
   --radius: 2rem;
+  color-scheme: light;
 }
 
+/* Dark palette: follows the OS unless the user picked light, or forced via data-theme="dark". */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 0 0% 6%;
@@ -37,7 +42,27 @@
     --border: 0 0% 17%;
     --input: 0 0% 17%;
     --link: 330 100% 62%;
+    --eyebrow: 63 100% 50%;
+    --gradient-end: 63 100% 50%;
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 6%;
+  --card-foreground: 0 0% 98%;
+  --muted: 0 0% 11%;
+  --muted-foreground: 0 0% 65%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 98%;
+  --border: 0 0% 17%;
+  --input: 0 0% 17%;
+  --link: 330 100% 62%;
+  --eyebrow: 63 100% 50%;
+  --gradient-end: 63 100% 50%;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -90,17 +115,24 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--gradient-end)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
+/* Follows the active theme: soft pink/yellow glow on white, deep glow on black. */
 .hero-glow {
   background:
-    radial-gradient(ellipse 80% 60% at 70% 20%, hsl(var(--primary) / 0.3), transparent),
-    radial-gradient(ellipse 60% 50% at 20% 80%, hsl(var(--accent) / 0.18), transparent),
-    linear-gradient(160deg, #18181b 0%, #000 100%);
+    radial-gradient(ellipse 80% 60% at 70% 20%, hsl(var(--primary) / 0.22), transparent),
+    radial-gradient(ellipse 60% 50% at 20% 80%, hsl(var(--accent) / 0.22), transparent),
+    linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.hero-eyebrow {
+  color: hsl(var(--eyebrow));
 }
 
 .glass-card {

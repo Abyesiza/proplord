@@ -1,7 +1,24 @@
 import type { Member, Who } from "./types";
 
-export const money = (amount: number, currency = "USD") =>
+/** Ugandan shillings by default; UGX has no minor unit so it prints without decimals. */
+export const money = (amount: number, currency = "UGX") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
+
+/** Input step for an amount in this currency. */
+export const amountStep = (currency: string) => (currency === "UGX" ? "1" : "0.01");
+
+export const PROPERTY_TYPES = [
+  { value: "apartments", label: "Apartment block" },
+  { value: "rental_rooms", label: "Rental rooms" },
+  { value: "house", label: "House" },
+  { value: "hostel", label: "Hostel" },
+  { value: "commercial", label: "Commercial / shops" },
+  { value: "mixed_use", label: "Mixed use" },
+  { value: "other", label: "Other" },
+];
+
+export const propertyTypeLabel = (value: string) =>
+  PROPERTY_TYPES.find((t) => t.value === value)?.label ?? humanize(value);
 
 export const formatDate = (iso: string) =>
   new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(

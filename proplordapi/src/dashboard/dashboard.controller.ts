@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, ParseUUIDPipe, Query } from '@nestjs/common';
 import { Auth, Authed, type AuthContext } from '../auth/auth.guard';
 import { DashboardService } from './dashboard.service';
 
@@ -8,7 +8,11 @@ export class DashboardController {
 
   @Authed()
   @Get('summary')
-  summary(@Auth() ctx: AuthContext) {
-    return this.dashboard.summary(ctx);
+  summary(
+    @Auth() ctx: AuthContext,
+    @Query('propertyId', new ParseUUIDPipe({ optional: true }))
+    propertyId?: string,
+  ) {
+    return this.dashboard.summary(ctx, propertyId);
   }
 }

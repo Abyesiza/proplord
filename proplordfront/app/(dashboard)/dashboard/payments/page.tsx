@@ -5,17 +5,18 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { getCharges, getPayments, getSummary } from "@/lib/data";
+import { getCharges, getPayments, getSummary, selectedPropertyId } from "@/lib/data";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Payments | Proplord" };
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({ searchParams }: PageProps<"/dashboard/payments">) {
+  const propertyId = await selectedPropertyId(searchParams);
   const [user, charges, payments, summary] = await Promise.all([
     requireUser(),
-    getCharges(),
-    getPayments(),
-    getSummary(),
+    getCharges(propertyId),
+    getPayments(propertyId),
+    getSummary(propertyId),
   ]);
   const landlord = user.role === "landlord";
   const open = charges.filter((c) => ["pending", "partial", "overdue"].includes(c.status));
@@ -28,7 +29,10 @@ export default async function PaymentsPage() {
         description={landlord ? "What tenants owe and what you have collected." : "What you owe and what you have paid."}
         actions={
           landlord && (
-            <Link href="/dashboard/payments/new" className={buttonStyles()}>
+            <Link
+              href={propertyId ? `/dashboard/payments/new?propertyId=${propertyId}` : "/dashboard/payments/new"}
+              className={buttonStyles()}
+            >
               Record payment
             </Link>
           )

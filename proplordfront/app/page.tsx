@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 
 const features = [
@@ -33,7 +34,7 @@ const steps = [
   {
     n: "01",
     title: "Add your property",
-    body: "Name it, set the currency, add units and rent.",
+    body: "Name it, pick the type, add your units and rent in shillings.",
   },
   {
     n: "02",
@@ -57,7 +58,7 @@ function Mockup() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground">Sunset Heights</p>
-            <p className="text-3xl font-black">$12,480</p>
+            <p className="text-3xl font-black">UGX 12,480,000</p>
             <p className="text-sm text-muted-foreground">collected this month</p>
           </div>
           <span className="rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground">
@@ -90,7 +91,7 @@ function Mockup() {
       <div className="absolute -bottom-8 -left-4 w-60 -rotate-3 rounded-md bg-primary p-5 text-primary-foreground shadow-xl sm:-left-10">
         <p className="text-xs font-bold uppercase tracking-widest">Receipt</p>
         <p className="mt-1 text-2xl font-black">RCT-000142</p>
-        <p className="text-sm">Unit 4B &middot; $1,200.00</p>
+        <p className="text-sm">Unit 4B &middot; UGX 1,200,000</p>
         <p className="mt-3 inline-block rounded-full bg-black px-3 py-1 text-xs font-bold text-accent">
           Payment received
         </p>
@@ -114,6 +115,7 @@ export default function Home() {
             <a href="#invite" className="hover:text-foreground">Tenants</a>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle className="hidden sm:inline-flex" />
             <Link
               href="/login"
               className="rounded-full px-5 py-2 text-sm font-semibold hover:text-link"
@@ -234,19 +236,19 @@ export default function Home() {
         </section>
 
         <section id="get-started" className="px-6 py-20 lg:px-12">
-          <div className="hero-glow rounded-lg px-8 py-16 text-center text-white sm:px-16">
+          <div className="hero-glow rounded-lg px-8 py-16 text-center sm:px-16">
             <h2 className="mx-auto max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
               Your properties deserve <span className="text-link">better</span>{" "}
               than a spreadsheet.
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-zinc-400">
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
               Add your first property in minutes and start tracking rent today.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link href="/signup" className={`${pill} bg-accent text-accent-foreground`}>
                 Create landlord account
               </Link>
-              <Link href="/login" className={`${pill} border border-zinc-700`}>
+              <Link href="/login" className={`${pill} border border-border`}>
                 Log in
               </Link>
             </div>

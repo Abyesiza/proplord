@@ -1,6 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
 import {
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -12,12 +14,26 @@ import {
 } from 'class-validator';
 import { trim } from '../auth/auth.dto';
 
-export class CreatePropertyDTO {
+export const PROPERTY_TYPES = [
+  'apartments',
+  'rental_rooms',
+  'house',
+  'hostel',
+  'commercial',
+  'mixed_use',
+  'other',
+] as const;
+
+export class PropertyDetailsDTO {
   @Transform(trim)
   @IsString()
   @IsNotEmpty()
   @MaxLength(120)
   name!: string;
+
+  @IsOptional()
+  @IsIn(PROPERTY_TYPES)
+  propertyType?: (typeof PROPERTY_TYPES)[number];
 
   @IsOptional()
   @IsString()
@@ -53,7 +69,30 @@ export class CreatePropertyDTO {
   currency?: string;
 }
 
-export class UpdatePropertyDTO extends PartialType(CreatePropertyDTO) {}
+export class CreatePropertyDTO extends PropertyDetailsDTO {
+  /** Units to create with the property, named "<unitLabel> 1", "<unitLabel> 2", ... */
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(500)
+  unitCount?: number;
+
+  /** Defaults to a label that fits the property type, e.g. "Room" for rental rooms. */
+  @IsOptional()
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(30)
+  unitLabel?: string;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(1_000_000_000)
+  defaultRent?: number;
+}
+
+export class UpdatePropertyDTO extends PartialType(PropertyDetailsDTO) {}
 
 export class CreateUnitDTO {
   @Transform(trim)

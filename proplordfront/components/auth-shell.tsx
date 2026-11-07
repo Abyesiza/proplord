@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ThemeToggle } from "./theme-toggle";
 import { Logo } from "./logo";
 
 export function AuthShell({
@@ -13,7 +14,8 @@ export function AuthShell({
   footer?: ReactNode;
 }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-4 py-12">
+    <main className="relative flex flex-1 flex-col items-center justify-center px-4 py-12">
+      <ThemeToggle className="absolute right-4 top-4" />
       <div className="mb-8">
         <Logo />
       </div>

@@ -33,7 +33,9 @@ const qs = (params: Record<string, string | undefined>) => {
   return query ? `?${query}` : "";
 };
 
-export const getSummary = cache(() => apiAuthed<Summary>("/dashboard/summary"));
+export const getSummary = cache((propertyId?: string) =>
+  apiAuthed<Summary>(`/dashboard/summary${qs({ propertyId })}`),
+);
 export const getProperties = cache(() => apiAuthed<Property[]>("/properties"));
 export const getProperty = cache((id: string) =>
   apiAuthed<PropertyDetail>(`/properties/${id}`),
@@ -46,5 +48,16 @@ export const getCharges = (propertyId?: string) =>
   apiAuthed<Charge[]>(`/charges${qs({ propertyId })}`);
 export const getPayments = (propertyId?: string) =>
   apiAuthed<Payment[]>(`/payments${qs({ propertyId })}`);
-export const getReceipts = () => apiAuthed<Receipt[]>("/receipts");
+export const getReceipts = (propertyId?: string) =>
+  apiAuthed<Receipt[]>(`/receipts${qs({ propertyId })}`);
 export const getReceipt = (id: string) => apiAuthed<Receipt>(`/receipts/${id}`);
+
+/** The `?propertyId=` filter, kept only if it names one of the caller's properties. */
+export async function selectedPropertyId(
+  searchParams: Promise<Record<string, string | string[] | undefined>>,
+): Promise<string | undefined> {
+  const { propertyId } = await searchParams;
+  if (typeof propertyId !== "string") return undefined;
+  const properties = await getProperties();
+  return properties.some((p) => p.id === propertyId) ? propertyId : undefined;
+}

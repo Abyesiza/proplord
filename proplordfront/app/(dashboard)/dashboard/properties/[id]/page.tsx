@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ApiError } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { getProperty } from "@/lib/data";
-import { location } from "@/lib/format";
+import { location, propertyTypeLabel } from "@/lib/format";
 import { requireUser } from "@/lib/session";
 import { BillingTab } from "./billing-tab";
 import { TenantsTab } from "./tenants-tab";
@@ -38,7 +38,12 @@ export default async function PropertyPage({
         eyebrow="Property"
         title={property.name}
         description={location(property)}
-        actions={<Badge variant="outline">{property.currency}</Badge>}
+        actions={
+          <div className="flex gap-2">
+            <Badge variant="outline">{propertyTypeLabel(property.propertyType)}</Badge>
+            <Badge variant="outline">{property.currency}</Badge>
+          </div>
+        }
       />
 
       <nav aria-label="Property sections" className="mb-6 inline-flex gap-1 rounded-full border border-border bg-card p-1">

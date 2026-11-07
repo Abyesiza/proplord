@@ -5,17 +5,18 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Table, Td } from "@/components/ui/table";
-import { getMembers, getProperties } from "@/lib/data";
+import { getMembers, getProperties, selectedPropertyId } from "@/lib/data";
 import { formatDate, humanize } from "@/lib/format";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Tenants | Proplord" };
 
-export default async function TenantsPage() {
+export default async function TenantsPage({ searchParams }: PageProps<"/dashboard/tenants">) {
   const user = await requireUser();
   if (user.role !== "landlord") redirect("/dashboard");
 
-  const [members, properties] = await Promise.all([getMembers(), getProperties()]);
+  const propertyId = await selectedPropertyId(searchParams);
+  const [members, properties] = await Promise.all([getMembers(propertyId), getProperties()]);
   const propertyName = new Map(properties.map((p) => [p.id, p.name]));
 
   return (

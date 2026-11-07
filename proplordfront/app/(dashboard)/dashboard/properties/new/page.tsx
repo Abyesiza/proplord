@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { createProperty } from "@/actions/manage";
 import { ActionForm } from "@/components/ui/action-form";
 import { Card } from "@/components/ui/card";
-import { Field } from "@/components/ui/form";
+import { Field, SelectField } from "@/components/ui/form";
 import { PageHeader } from "@/components/ui/page-header";
+import { PROPERTY_TYPES } from "@/lib/format";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Add property | Proplord" };
@@ -14,23 +15,19 @@ export default async function NewPropertyPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Properties" title="Add a property" description="You can add units and tenants next." />
-      <Card className="max-w-2xl">
-        <ActionForm action={createProperty} submitLabel="Create property">
+      <PageHeader eyebrow="Properties" title="Add a property" description="Tell us what it is and how many units it has. Rent is in Ugandan shillings (UGX)." />
+      <Card>
+        <ActionForm action={createProperty} submitLabel="Create property" columns={3}>
           <Field label="Property name" name="name" placeholder="Sunset Heights" />
+          <SelectField label="Property type" name="propertyType" options={PROPERTY_TYPES} />
+          <Field label="Number of units" name="unitCount" type="number" min="1" max="500" step="1" defaultValue="1" hint="Flats, rooms or shops you rent out" />
+          <Field label="Unit name prefix" name="unitLabel" required={false} placeholder="Room" hint="Units become Room 1, Room 2... Blank names them by type" />
+          <Field label="Rent per unit (UGX)" name="defaultRent" type="number" min="0" step="1000" required={false} hint="Per month. You can edit each unit later" />
+          <Field label="Country" name="country" defaultValue="Uganda" required={false} />
           <Field label="Address" name="addressLine" required={false} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="City" name="city" required={false} />
-            <Field label="State / region" name="state" required={false} />
-            <Field label="Country" name="country" required={false} />
-            <Field
-              label="Currency"
-              name="currency"
-              defaultValue="USD"
-              hint="3-letter code, e.g. USD, KES, UGX"
-            />
-          </div>
-          <Field label="Description" name="description" required={false} />
+          <Field label="City / town" name="city" required={false} />
+          <Field label="District / region" name="state" required={false} />
+          <Field label="Description" name="description" required={false} wide />
         </ActionForm>
       </Card>
     </>

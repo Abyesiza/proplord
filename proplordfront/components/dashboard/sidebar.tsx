@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/cn";
-import { isActive, navFor } from "@/lib/nav";
+import { isActive, navFor, withProperty } from "@/lib/nav";
 import type { Role } from "@/lib/types";
 
 export function DashboardSidebar({ role }: { role: Role }) {
   const pathname = usePathname();
+  const propertyId = useSearchParams().get("propertyId");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export function DashboardSidebar({ role }: { role: Role }) {
             return (
               <Link
                 key={label}
-                href={href}
+                href={withProperty(href, propertyId)}
                 onClick={() => setOpen(false)}
                 aria-current={active ? "page" : undefined}
                 className={cn(

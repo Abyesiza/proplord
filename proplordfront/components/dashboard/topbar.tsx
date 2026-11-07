@@ -3,11 +3,21 @@
 import { Menu } from "lucide-react";
 import { logout } from "@/actions/auth";
 import { Badge } from "@/components/ui/badge";
+import { PropertyFilter } from "./property-filter";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { initials } from "@/lib/format";
 import type { Role } from "@/lib/types";
 
-export function DashboardTopbar({ name, role }: { name: string; role: Role }) {
+export function DashboardTopbar({
+  name,
+  role,
+  properties,
+}: {
+  name: string;
+  role: Role;
+  properties: { id: string; name: string }[];
+}) {
   return (
     <header className="no-print sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur lg:px-10">
       <button
@@ -18,7 +28,9 @@ export function DashboardTopbar({ name, role }: { name: string; role: Role }) {
       >
         <Menu className="size-5" aria-hidden />
       </button>
+      <PropertyFilter properties={properties} />
       <div className="ml-auto flex items-center gap-3">
+        <ThemeToggle />
         <span className="gradient-brand grid size-10 place-items-center rounded-full text-sm font-black text-primary-foreground">
           {initials(name)}
         </span>

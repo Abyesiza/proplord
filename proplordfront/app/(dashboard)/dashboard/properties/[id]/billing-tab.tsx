@@ -7,7 +7,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Field, SelectField } from "@/components/ui/form";
 import { getCharges, getMembers, getPayments } from "@/lib/data";
-import { memberOptions } from "@/lib/format";
+import { amountStep, memberOptions } from "@/lib/format";
 import type { PropertyDetail } from "@/lib/types";
 
 export async function BillingTab({
@@ -25,7 +25,7 @@ export async function BillingTab({
   const { currency } = property;
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_24rem]">
+    <div className="space-y-5">
       <div className="space-y-5">
         <Card>
           <CardHeader title="Charges" description="Rent and other amounts tenants owe" />
@@ -46,13 +46,13 @@ export async function BillingTab({
       </div>
 
       {landlord && (
-        <div className="space-y-5">
+        <div className="grid gap-5 xl:grid-cols-2">
           <Card>
             <CardHeader title="New charge" />
-            <ActionForm action={createCharge.bind(null, property.id)} submitLabel="Create charge">
-              <SelectField label="Tenant" name="memberId" options={memberOptions(members)} emptyLabel="Choose tenant" />
-              <Field label="Description" name="description" placeholder="Rent for November" />
-              <Field label={`Amount (${currency})`} name="amount" type="number" step="0.01" min="0.01" />
+            <ActionForm action={createCharge.bind(null, property.id)} submitLabel="Create charge" columns={2}>
+              <SelectField label="Tenant" name="memberId" options={memberOptions(members)} emptyLabel="Choose tenant" wide />
+              <Field label="Description" name="description" placeholder="Rent for November" wide />
+              <Field label={`Amount (${currency})`} name="amount" type="number" step={amountStep(currency)} min={amountStep(currency)} />
               <Field label="Due date" name="dueDate" type="date" />
             </ActionForm>
           </Card>

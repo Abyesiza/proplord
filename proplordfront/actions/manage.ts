@@ -40,12 +40,15 @@ async function saveInProperty(
 export async function createProperty(_: FormState, data: FormData): Promise<FormState> {
   const result = await call<Property>("/properties", "POST", {
     name: text(data, "name"),
+    propertyType: optional(data, "propertyType"),
+    unitCount: Number(text(data, "unitCount") || 0),
+    unitLabel: optional(data, "unitLabel"),
+    defaultRent: optional(data, "defaultRent") && Number(text(data, "defaultRent")),
     description: optional(data, "description"),
     addressLine: optional(data, "addressLine"),
     city: optional(data, "city"),
     state: optional(data, "state"),
     country: optional(data, "country"),
-    currency: optional(data, "currency"),
   });
   if (!result.ok) return { error: result.error };
   revalidatePath("/dashboard/properties");

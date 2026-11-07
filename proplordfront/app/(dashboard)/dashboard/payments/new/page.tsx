@@ -37,7 +37,7 @@ export default async function RecordPaymentPage({
       ) : properties.length === 0 ? (
         <EmptyState title="Add a property first" action={<Link href="/dashboard/properties/new" className={buttonStyles()}>Add property</Link>} />
       ) : (
-        <Card className="max-w-2xl">
+        <Card>
           <CardHeader title="Choose a property" />
           <ul className="flex flex-wrap gap-3">
             {properties.map((p) => (
@@ -65,7 +65,7 @@ async function PropertyForm({
 }) {
   const [members, charges] = await Promise.all([getMembers(propertyId), getCharges(propertyId)]);
   return (
-    <Card className="max-w-2xl">
+    <Card>
       <CardHeader title={name} />
       <RecordPaymentForm propertyId={propertyId} currency={currency} members={members} charges={charges} />
     </Card>

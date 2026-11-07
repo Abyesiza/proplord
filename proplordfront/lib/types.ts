@@ -10,6 +10,7 @@ export type Property = {
   id: string;
   name: string;
   description: string | null;
+  propertyType: string;
   addressLine: string | null;
   city: string | null;
   state: string | null;

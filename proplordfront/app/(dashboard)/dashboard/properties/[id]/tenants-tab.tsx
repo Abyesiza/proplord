@@ -25,7 +25,7 @@ export async function TenantsTab({ property }: { property: PropertyDetail }) {
   const pending = invitations.filter((i) => i.status === "pending");
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_24rem]">
+    <div className="space-y-5">
       <div className="space-y-5">
         <Card>
           <CardHeader title="Tenants" description="People with access to this property" />
@@ -81,10 +81,10 @@ export async function TenantsTab({ property }: { property: PropertyDetail }) {
         )}
       </div>
 
-      <div className="space-y-5">
+      <div className="grid gap-5 xl:grid-cols-2">
         <Card>
           <CardHeader title="Invite by email" description="They get a link to join and set a password." />
-          <ActionForm action={inviteTenant.bind(null, property.id)} submitLabel="Create invite">
+          <ActionForm action={inviteTenant.bind(null, property.id)} submitLabel="Create invite" columns={2}>
             <Field label="Email" name="email" type="email" autoComplete="off" />
             <SelectField label="Unit" name="unitId" required={false} options={unitOptions} emptyLabel="No unit yet" />
           </ActionForm>
@@ -92,7 +92,7 @@ export async function TenantsTab({ property }: { property: PropertyDetail }) {
 
         <Card>
           <CardHeader title="Create a login" description="For tenants without email. Share the details with them." />
-          <ActionForm action={createTenantLogin.bind(null, property.id)} submitLabel="Create login">
+          <ActionForm action={createTenantLogin.bind(null, property.id)} submitLabel="Create login" columns={2}>
             <Field label="Full name" name="fullName" autoComplete="off" />
             <Field label="Username" name="username" autoComplete="off" hint="3-32 characters: a-z, 0-9, _ . -" />
             <Field label="Password" name="password" type="password" autoComplete="new-password" minLength={8} hint="At least 8 characters" />

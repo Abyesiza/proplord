@@ -5,20 +5,49 @@ import { unwrap, unwrapRows } from '../common/db-error';
 import {
   CreatePropertyDTO,
   CreateUnitDTO,
+  PROPERTY_TYPES,
   UpdatePropertyDTO,
   UpdateUnitDTO,
 } from './properties.dto';
 
+const UNIT_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
+  apartments: 'Unit',
+  rental_rooms: 'Room',
+  house: 'House',
+  hostel: 'Room',
+  commercial: 'Shop',
+  mixed_use: 'Unit',
+  other: 'Unit',
+};
+
 @Injectable()
 export class PropertiesService {
+  /** Creates the property and, when asked, its units in one go. */
   async create(ctx: AuthContext, dto: CreatePropertyDTO) {
-    return unwrap(
+    const { unitCount, unitLabel, defaultRent, ...details } = dto;
+    const property = unwrap(
       await ctx.db
         .from('properties')
-        .insert({ ...toColumns(dto), owner_id: ctx.userId })
+        .insert({ ...toColumns(details), owner_id: ctx.userId })
         .select()
-        .single(),
+        .single<{ id: string } & Record<string, unknown>>(),
     );
+
+    if (unitCount) {
+      const label = unitLabel ?? UNIT_LABELS[dto.propertyType ?? 'apartments'];
+      const units = Array.from({ length: unitCount }, (_, i) => ({
+        property_id: property.id,
+        name: `${label} ${i + 1}`,
+        rent_amount: defaultRent ?? 0,
+      }));
+      const result = await ctx.db.from('units').insert(units);
+      if (result.error) {
+        // No transaction across REST calls, so undo the property by hand.
+        await ctx.db.from('properties').delete().eq('id', property.id);
+        unwrap({ data: null, error: result.error });
+      }
+    }
+    return property;
   }
 
   async list(ctx: AuthContext) {

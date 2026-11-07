@@ -28,6 +28,20 @@ const NAV_ITEMS: NavItem[] = [
 export const navFor = (role: Role) =>
   NAV_ITEMS.filter((item) => item.roles.includes(role));
 
+/** Pages whose data can be narrowed to one property with `?propertyId=`. */
+export const FILTERED_PATHS = [
+  "/dashboard",
+  "/dashboard/tenants",
+  "/dashboard/payments",
+  "/dashboard/receipts",
+];
+
+/** Keeps the chosen property when moving between filtered pages. */
+export const withProperty = (href: string, propertyId: string | null) =>
+  propertyId && FILTERED_PATHS.includes(href)
+    ? `${href}?propertyId=${encodeURIComponent(propertyId)}`
+    : href;
+
 export const isActive = (pathname: string, href: string) =>
   href === "/dashboard"
     ? pathname === href

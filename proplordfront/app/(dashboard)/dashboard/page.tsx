@@ -4,28 +4,29 @@ import { DueChargesCard } from "@/components/dashboard/due-charges-card";
 import { RecentPaymentsCard } from "@/components/dashboard/recent-payments-card";
 import { buttonStyles } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/stat-card";
-import { getSummary } from "@/lib/data";
+import { getSummary, selectedPropertyId } from "@/lib/data";
 import { money } from "@/lib/format";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Overview | Proplord" };
 
-export default async function OverviewPage() {
-  const [user, summary] = await Promise.all([requireUser(), getSummary()]);
+export default async function OverviewPage({ searchParams }: PageProps<"/dashboard">) {
+  const propertyId = await selectedPropertyId(searchParams);
+  const [user, summary] = await Promise.all([requireUser(), getSummary(propertyId)]);
   const landlord = user.role === "landlord";
   const firstName = (user.fullName ?? user.username ?? "there").split(" ")[0];
   const { currency } = summary;
 
   return (
     <>
-      <section className="hero-glow mb-8 rounded-lg p-8 text-white md:p-10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+      <section className="hero-glow mb-8 rounded-lg p-8 md:p-10">
+        <p className="hero-eyebrow text-xs font-semibold uppercase tracking-widest">
           {landlord ? "Landlord overview" : "Your home"}
         </p>
         <h1 className="mt-2 text-3xl font-black tracking-tight md:text-5xl">
           Welcome back, <span className="gradient-text">{firstName}</span>
         </h1>
-        <p className="mt-3 max-w-xl text-white/70">
+        <p className="mt-3 max-w-xl text-muted-foreground">
           {landlord
             ? "Collect rent, keep tenants organised and hand out receipts in one place."
             : "See what you owe, what you have paid and download your receipts."}

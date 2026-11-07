@@ -11,8 +11,8 @@ const variants = {
   outline: "border border-border bg-transparent text-foreground hover:bg-muted",
   ghost: "bg-transparent text-foreground hover:bg-muted",
   destructive: "bg-destructive text-destructive-foreground hover:opacity-95",
-  /** For surfaces that stay dark in both themes, e.g. `.hero-glow`. */
-  onDark: "border border-white/30 bg-transparent text-white hover:bg-white/10",
+  /** For `.hero-glow` surfaces, which follow the active theme. */
+  onDark: "border border-border bg-transparent text-foreground hover:bg-muted",
 } as const;
 
 const sizes = {

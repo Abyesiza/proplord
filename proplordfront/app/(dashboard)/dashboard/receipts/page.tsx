@@ -3,13 +3,13 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Table, Td } from "@/components/ui/table";
-import { getReceipts } from "@/lib/data";
+import { getReceipts, selectedPropertyId } from "@/lib/data";
 import { formatDate, money, personName } from "@/lib/format";
 
 export const metadata = { title: "Receipts | Proplord" };
 
-export default async function ReceiptsPage() {
-  const receipts = await getReceipts();
+export default async function ReceiptsPage({ searchParams }: PageProps<"/dashboard/receipts">) {
+  const receipts = await getReceipts(await selectedPropertyId(searchParams));
 
   return (
     <>

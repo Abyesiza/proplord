@@ -18,7 +18,10 @@ type FieldProps = {
   placeholder?: string;
   step?: string;
   min?: string;
+  max?: string;
   defaultValue?: string;
+  /** Spans every column of a multi-column `ActionForm`. */
+  wide?: boolean;
 };
 
 export function Field({
@@ -26,10 +29,11 @@ export function Field({
   hint,
   required = true,
   type = "text",
+  wide,
   ...props
 }: FieldProps) {
   return (
-    <label className="block">
+    <label className={cn("block", wide && "col-span-full")}>
       <span className="mb-1.5 block px-2 text-sm font-semibold">{label}</span>
       <input type={type} required={required} className={control} {...props} />
       {hint && (
@@ -46,6 +50,7 @@ export function SelectField({
   required = true,
   hint,
   emptyLabel,
+  wide,
 }: {
   label: string;
   name: string;
@@ -53,9 +58,10 @@ export function SelectField({
   required?: boolean;
   hint?: string;
   emptyLabel?: string;
+  wide?: boolean;
 }) {
   return (
-    <label className="block">
+    <label className={cn("block", wide && "col-span-full")}>
       <span className="mb-1.5 block px-2 text-sm font-semibold">{label}</span>
       <select name={name} required={required} className={cn(control, "appearance-none")}>
         {(emptyLabel || !required) && <option value="">{emptyLabel ?? "None"}</option>}
@@ -95,10 +101,10 @@ export function SubmitButton({
   );
 }
 
-export function FormError({ message }: { message?: string }) {
+export function FormError({ message, className }: { message?: string; className?: string }) {
   if (!message) return null;
   return (
-    <p role="alert" className="rounded-md bg-destructive px-5 py-3 text-sm font-semibold text-destructive-foreground">
+    <p role="alert" className={cn("rounded-md bg-destructive px-5 py-3 text-sm font-semibold text-destructive-foreground", className)}>
       {message}
     </p>
   );
