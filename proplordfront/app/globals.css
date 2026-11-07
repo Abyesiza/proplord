@@ -1,31 +1,67 @@
 @import "tailwindcss";
 
+/* Brand: black / white canvas, hot pink primary, electric yellow accent. HSL channels so tenants can override. */
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --surface: #f4f4f5;
-  --border: #e4e4e7;
-  --muted: #52525b;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 4%;
+  --card: 0 0% 98%;
+  --card-foreground: 0 0% 4%;
+  --muted: 0 0% 95%;
+  --muted-foreground: 0 0% 36%;
+  --primary: 330 100% 56%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 94%;
+  --secondary-foreground: 0 0% 4%;
+  --accent: 63 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 89%;
+  --input: 0 0% 89%;
+  --ring: 330 100% 56%;
+  /* Darker pink for small text on light surfaces (4.5:1). */
+  --link: 330 100% 38%;
+  --radius: 2rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
-    --foreground: #fafafa;
-    --surface: #111111;
-    --border: #262626;
-    --muted: #a1a1aa;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+    --muted: 0 0% 11%;
+    --muted-foreground: 0 0% 65%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --border: 0 0% 17%;
+    --input: 0 0% 17%;
+    --link: 330 100% 62%;
   }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-pink: #ff1f8e;
-  --color-volt: #f2ff00;
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-link: hsl(var(--link));
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 1.375);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -35,12 +71,56 @@ html {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 ::selection {
-  background: var(--color-volt);
-  color: #000;
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.section-label {
+  @apply text-xs font-semibold uppercase tracking-widest text-link;
+}
+
+.gradient-brand {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-glow {
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 20%, hsl(var(--primary) / 0.3), transparent),
+    radial-gradient(ellipse 60% 50% at 20% 80%, hsl(var(--accent) / 0.18), transparent),
+    linear-gradient(160deg, #18181b 0%, #000 100%);
+}
+
+.glass-card {
+  background: rgb(255 255 255 / 0.05);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  backdrop-filter: blur(12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-print {
+    display: none !important;
+  }
 }

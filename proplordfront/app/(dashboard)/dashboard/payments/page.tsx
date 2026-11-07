@@ -1,0 +1,57 @@
+import Link from "next/link";
+import { ChargesTable } from "@/components/dashboard/charges-table";
+import { PaymentsTable } from "@/components/dashboard/payments-table";
+import { buttonStyles } from "@/components/ui/button";
+import { Card, CardHeader } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
+import { getCharges, getPayments, getSummary } from "@/lib/data";
+import { requireUser } from "@/lib/session";
+
+export const metadata = { title: "Payments | Proplord" };
+
+export default async function PaymentsPage() {
+  const [user, charges, payments, summary] = await Promise.all([
+    requireUser(),
+    getCharges(),
+    getPayments(),
+    getSummary(),
+  ]);
+  const landlord = user.role === "landlord";
+  const open = charges.filter((c) => ["pending", "partial", "overdue"].includes(c.status));
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Money"
+        title="Payments"
+        description={landlord ? "What tenants owe and what you have collected." : "What you owe and what you have paid."}
+        actions={
+          landlord && (
+            <Link href="/dashboard/payments/new" className={buttonStyles()}>
+              Record payment
+            </Link>
+          )
+        }
+      />
+      <div className="space-y-5">
+        <Card>
+          <CardHeader title="Outstanding charges" />
+          {open.length === 0 ? (
+            <EmptyState title="Nothing outstanding" />
+          ) : (
+            <ChargesTable charges={open} currency={summary.currency} showTenant={landlord} />
+          )}
+        </Card>
+        <Card>
+          <CardHeader title="Payment history" />
+          {payments.length === 0 ? (
+            <EmptyState title="No payments yet" />
+          ) : (
+            <PaymentsTable payments={payments} currency={summary.currency} showTenant={landlord} />
+          )}
+        </Card>
+      </div>
+    </>
+  );
+}
