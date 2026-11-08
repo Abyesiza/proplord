@@ -1,8 +1,9 @@
 import "server-only";
 
-const API_URL =
-  process.env.API_URL ??
-  (process.env.NODE_ENV === "production" ? "https://proplordapi.vercel.app" : "http://localhost:4000");
+// Set API_URL to the deployed API; localhost is only a development fallback.
+const API_URL = (
+  process.env.API_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:4000")
+).replace(/\/+$/, "");
 
 export class ApiError extends Error {
   constructor(
@@ -19,6 +20,7 @@ export async function api<T>(
   path: string,
   { method = "GET", body, token }: Options = {},
 ): Promise<T> {
+  if (!API_URL) throw new Error("API_URL is not set. Add it to the project's environment variables.");
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers: {

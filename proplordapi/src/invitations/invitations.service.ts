@@ -42,8 +42,9 @@ export class InvitationsService {
     private readonly auth: AuthService,
     config: ConfigService,
   ) {
-    this.webOrigin =
-      config.get<string>('WEB_ORIGIN') ?? 'http://localhost:3000';
+    this.webOrigin = (
+      config.get<string>('WEB_ORIGIN') ?? 'http://localhost:3000'
+    ).replace(/\/+$/, '');
   }
 
   /** The raw token only exists in the returned link; the DB stores its hash. */
