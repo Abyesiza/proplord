@@ -13,7 +13,11 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.enableCors({ origin: process.env.WEB_ORIGIN ?? 'http://localhost:3000' });
+  const origins = [
+    process.env.WEB_ORIGIN ?? 'http://localhost:3000',
+    'https://proplord.vercel.app',
+  ];
+  app.enableCors({ origin: origins });
   await app.listen(process.env.PORT ?? 4000);
 }
 void bootstrap();
