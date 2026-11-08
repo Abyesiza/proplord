@@ -1,6 +1,8 @@
 import "server-only";
 
-const API_URL = process.env.API_URL ?? "http://localhost:4000";
+const API_URL =
+  process.env.API_URL ??
+  (process.env.NODE_ENV === "production" ? "https://proplordapi.vercel.app" : "http://localhost:4000");
 
 export class ApiError extends Error {
   constructor(
