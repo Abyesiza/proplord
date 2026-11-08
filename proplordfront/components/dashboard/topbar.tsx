@@ -1,12 +1,8 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { logout } from "@/actions/auth";
-import { Badge } from "@/components/ui/badge";
 import { PropertyFilter } from "./property-filter";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { initials } from "@/lib/format";
+import { ProfileMenu } from "./profile-menu";
 import type { Role } from "@/lib/types";
 
 export function DashboardTopbar({
@@ -19,30 +15,18 @@ export function DashboardTopbar({
   properties: { id: string; name: string }[];
 }) {
   return (
-    <header className="no-print sticky top-0 z-20 flex h-16 items-center justify-between gap-4 border-b border-border bg-background/80 px-4 backdrop-blur lg:px-10">
+    <header className="no-print sticky top-0 z-20 flex h-16 items-center justify-between gap-2 border-b border-border bg-background/80 px-3 backdrop-blur sm:gap-4 sm:px-4 lg:px-10">
       <button
         type="button"
-        className="grid size-11 place-items-center rounded-full transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
+        className="grid size-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
         aria-label="Toggle navigation"
         onClick={() => window.dispatchEvent(new Event("toggle-sidebar"))}
       >
         <Menu className="size-5" aria-hidden />
       </button>
       <PropertyFilter properties={properties} />
-      <div className="ml-auto flex items-center gap-3">
-        <ThemeToggle />
-        <span className="gradient-brand grid size-10 place-items-center rounded-full text-sm font-black text-primary-foreground">
-          {initials(name)}
-        </span>
-        <div className="hidden text-sm leading-tight sm:block">
-          <p className="font-semibold">{name}</p>
-          <Badge variant="outline">{role === "landlord" ? "Landlord" : "Tenant"}</Badge>
-        </div>
-        <form action={logout}>
-          <Button variant="outline" size="sm">
-            Log out
-          </Button>
-        </form>
+      <div className="ml-auto shrink-0">
+        <ProfileMenu name={name} role={role} />
       </div>
     </header>
   );

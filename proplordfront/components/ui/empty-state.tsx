@@ -10,7 +10,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border px-6 py-12 text-center">
+    <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center sm:px-6 sm:py-12">
       <p className="text-lg font-bold">{title}</p>
       {description && (
         <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">{description}</p>

@@ -8,7 +8,7 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { CreateMemberDTO, UpdateMemberDTO } from './members.dto';
 
 const MEMBER_SELECT =
-  '*, profile:profiles(full_name, email, username, phone), unit:units(name)';
+  '*, profile:profiles(full_name, email, username, phone), unit:units(name, rent_amount)';
 
 type MemberRow = { profile?: { email: string | null } | null };
 
@@ -43,7 +43,9 @@ export class MembersService {
     dto: CreateMemberDTO,
   ) {
     await assertOwnsProperty(ctx, propertyId);
-    if (dto.unitId) await assertUnitInProperty(ctx, propertyId, dto.unitId);
+    const role = dto.role ?? 'tenant';
+    const unitId = role === 'tenant' ? dto.unitId : undefined;
+    if (unitId) await assertUnitInProperty(ctx, propertyId, unitId);
 
     const { data: taken } = await this.supabase.admin
       .from('profiles')
@@ -58,7 +60,7 @@ export class MembersService {
       metadata: {
         full_name: dto.fullName,
         username: dto.username,
-        role: 'tenant',
+        role,
       },
     });
 
@@ -67,8 +69,8 @@ export class MembersService {
       .insert({
         property_id: propertyId,
         user_id: user.id,
-        unit_id: dto.unitId ?? null,
-        role: 'tenant',
+        unit_id: unitId ?? null,
+        role,
         origin: 'credentials',
       })
       .select(MEMBER_SELECT)

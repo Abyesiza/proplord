@@ -31,6 +31,7 @@ export function Badge({
 
 const STATUS_VARIANT: Record<string, keyof typeof variants> = {
   paid: "accent",
+  prepaid: "accent",
   completed: "accent",
   active: "accent",
   accepted: "accent",

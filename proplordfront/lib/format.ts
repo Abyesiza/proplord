@@ -1,4 +1,4 @@
-import type { Member, Who } from "./types";
+import type { Frequency, Member, Who } from "./types";
 
 /** Ugandan shillings by default; UGX has no minor unit so it prints without decimals. */
 export const money = (amount: number, currency = "UGX") =>
@@ -52,3 +52,43 @@ export const location = (p: {
   city?: string | null;
   country?: string | null;
 }) => [p.addressLine, p.city, p.country].filter(Boolean).join(", ") || "No address yet";
+
+export const FREQUENCIES: { value: Frequency; label: string; months: number; noun: string }[] = [
+  { value: "biweekly", label: "Bi-weekly", months: 0.5, noun: "fortnight" },
+  { value: "monthly", label: "Monthly", months: 1, noun: "month" },
+  { value: "quarterly", label: "Quarterly (3 months)", months: 3, noun: "quarter" },
+  { value: "semiannual", label: "Every 6 months", months: 6, noun: "half-year" },
+  { value: "annual", label: "Yearly", months: 12, noun: "year" },
+];
+
+export const frequencyLabel = (value: Frequency) =>
+  FREQUENCIES.find((f) => f.value === value)?.label ?? humanize(value);
+
+/** Mirrors the API: the agreed amount, else unit rent scaled to the plan. */
+export function installment(
+  member: Pick<Member, "paymentFrequency" | "agreedAmount" | "unit">,
+): number {
+  if (member.agreedAmount) return member.agreedAmount;
+  const months = FREQUENCIES.find((f) => f.value === member.paymentFrequency)?.months ?? 1;
+  return Math.round((member.unit?.rentAmount ?? 0) * months * 100) / 100;
+}
+
+const monthYear = (iso: string) =>
+  new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric", timeZone: "UTC" }).format(
+    new Date(iso),
+  );
+
+/** Human label for the periods a payment covers, or null for a plain payment. */
+export function coverage(p: {
+  frequency: Frequency | null;
+  periodStart: string | null;
+  periodEnd: string | null;
+}): string | null {
+  if (!p.frequency || !p.periodStart || !p.periodEnd) return null;
+  const last = new Date(new Date(`${p.periodEnd}T00:00:00Z`).getTime() - 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+  if (p.frequency === "biweekly") return `${formatDate(p.periodStart)} to ${formatDate(last)}`;
+  const [from, to] = [monthYear(p.periodStart), monthYear(last)];
+  return from === to ? from : `${from} to ${to}`;
+}

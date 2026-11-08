@@ -1,43 +1,59 @@
 import { AlertTriangle, Building2, Users, Wallet } from "lucide-react";
+import { suspended } from "@/components/skeletons/suspended";
 import Link from "next/link";
 import { DueChargesCard } from "@/components/dashboard/due-charges-card";
+import { AdminOverview } from "@/components/dashboard/admin-overview";
 import { RecentPaymentsCard } from "@/components/dashboard/recent-payments-card";
 import { buttonStyles } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/stat-card";
 import { getSummary, selectedPropertyId } from "@/lib/data";
 import { money } from "@/lib/format";
+import { isStaff, ROLE_LABELS } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Overview | Proplord" };
 
-export default async function OverviewPage({ searchParams }: PageProps<"/dashboard">) {
+export default suspended(OverviewPage);
+
+async function OverviewPage({ searchParams }: PageProps<"/dashboard">) {
+  const user = await requireUser();
+  if (user.role === "admin") {
+    return <AdminOverview firstName={(user.fullName ?? user.username ?? "there").split(" ")[0]} />;
+  }
+
   const propertyId = await selectedPropertyId(searchParams);
-  const [user, summary] = await Promise.all([requireUser(), getSummary(propertyId)]);
+  const summary = await getSummary(propertyId);
+  const staff = isStaff(user.role);
   const landlord = user.role === "landlord";
   const firstName = (user.fullName ?? user.username ?? "there").split(" ")[0];
   const { currency } = summary;
 
   return (
     <>
-      <section className="hero-glow mb-8 rounded-lg p-8 md:p-10">
+      <section className="hero-glow mb-6 rounded-lg p-5 sm:mb-8 sm:p-8 md:p-10">
         <p className="hero-eyebrow text-xs font-semibold uppercase tracking-widest">
-          {landlord ? "Landlord overview" : "Your home"}
+          {staff ? `${ROLE_LABELS[user.role]} overview` : "Your home"}
         </p>
-        <h1 className="mt-2 text-3xl font-black tracking-tight md:text-5xl">
+        <h1 className="mt-2 break-words text-2xl font-black tracking-tight sm:text-3xl md:text-5xl">
           Welcome back, <span className="gradient-text">{firstName}</span>
         </h1>
         <p className="mt-3 max-w-xl text-muted-foreground">
-          {landlord
+          {staff
             ? "Collect rent, keep tenants organised and hand out receipts in one place."
             : "See what you owe, what you have paid and download your receipts."}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
-          {landlord ? (
+          {staff ? (
             <>
-              <Link href="/dashboard/properties/new" className={buttonStyles({ variant: "accent" })}>
-                Add property
-              </Link>
-              <Link href="/dashboard/payments/new" className={buttonStyles({ variant: "onDark" })}>
+              {landlord && (
+                <Link href="/dashboard/properties/new" className={buttonStyles({ variant: "accent" })}>
+                  Add property
+                </Link>
+              )}
+              <Link
+                href="/dashboard/payments/new"
+                className={buttonStyles({ variant: landlord ? "onDark" : "accent" })}
+              >
                 Record payment
               </Link>
             </>
@@ -53,23 +69,23 @@ export default async function OverviewPage({ searchParams }: PageProps<"/dashboa
         <StatCard
           tone="primary"
           icon={Wallet}
-          label={landlord ? "Collected this month" : "Paid this month"}
+          label={staff ? "Collected this month" : "Paid this month"}
           value={money(summary.collectedThisMonth, currency)}
         />
         <StatCard
           tone="accent"
           icon={AlertTriangle}
-          label={landlord ? "Outstanding" : "Balance due"}
+          label={staff ? "Outstanding" : "Balance due"}
           value={money(summary.outstanding, currency)}
           hint={`${summary.overdueCount} overdue`}
         />
         <StatCard
           icon={Building2}
-          label={landlord ? "Properties" : "Homes"}
+          label={staff ? "Properties" : "Homes"}
           value={String(summary.properties)}
-          hint={landlord ? `${summary.units} units` : undefined}
+          hint={staff ? `${summary.units} units` : undefined}
         />
-        {landlord && (
+        {staff && (
           <StatCard
             icon={Users}
             label="Active tenants"
@@ -79,7 +95,7 @@ export default async function OverviewPage({ searchParams }: PageProps<"/dashboa
       </div>
 
       <div className="mt-6 grid gap-5 xl:grid-cols-2">
-        <DueChargesCard charges={summary.dueSoon} currency={currency} showTenant={landlord} />
+        <DueChargesCard charges={summary.dueSoon} currency={currency} showTenant={staff} />
         <RecentPaymentsCard payments={summary.recentPayments} currency={currency} />
       </div>
     </>

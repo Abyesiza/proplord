@@ -31,7 +31,7 @@ export function DashboardSidebar({ role }: { role: Role }) {
       <aside
         aria-label="Dashboard navigation"
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-card transition-transform duration-300 ease-in-out motion-reduce:transition-none lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 flex w-64 max-w-[85vw] flex-col overflow-y-auto border-r border-border bg-card transition-transform duration-300 ease-in-out motion-reduce:transition-none lg:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -61,7 +61,13 @@ export function DashboardSidebar({ role }: { role: Role }) {
           })}
         </nav>
         <p className="px-6 py-5 text-xs text-muted-foreground">
-          {role === "landlord" ? "Landlord workspace" : "Tenant portal"}
+          {role === "admin"
+            ? "Platform admin"
+            : role === "landlord"
+              ? "Landlord workspace"
+              : role === "caretaker"
+                ? "Caretaker workspace"
+                : "Tenant portal"}
         </p>
       </aside>
     </>

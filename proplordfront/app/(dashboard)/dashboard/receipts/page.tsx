@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { suspended } from "@/components/skeletons/suspended";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -8,7 +9,9 @@ import { formatDate, money, personName } from "@/lib/format";
 
 export const metadata = { title: "Receipts | Proplord" };
 
-export default async function ReceiptsPage({ searchParams }: PageProps<"/dashboard/receipts">) {
+export default suspended(ReceiptsPage);
+
+async function ReceiptsPage({ searchParams }: PageProps<"/dashboard/receipts">) {
   const receipts = await getReceipts(await selectedPropertyId(searchParams));
 
   return (

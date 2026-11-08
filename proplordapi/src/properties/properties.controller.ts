@@ -3,16 +3,19 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { Auth, Authed, type AuthContext } from '../auth/auth.guard';
 import {
   CreatePropertyDTO,
   CreateUnitDTO,
   UpdatePropertyDTO,
+  UpdateTermsDTO,
   UpdateUnitDTO,
 } from './properties.dto';
 import { PropertiesService } from './properties.service';
@@ -87,5 +90,41 @@ export class PropertiesController {
   @Delete('units/:id')
   removeUnit(@Auth() ctx: AuthContext, @Param('id', uuid) id: string) {
     return this.properties.removeUnit(ctx, id);
+  }
+
+  @Authed()
+  @Get('properties/:id/terms')
+  getTerms(@Auth() ctx: AuthContext, @Param('id', uuid) id: string) {
+    return this.properties.getTerms(ctx, id);
+  }
+
+  @Authed('landlord')
+  @Put('properties/:id/terms')
+  updateTerms(
+    @Auth() ctx: AuthContext,
+    @Param('id', uuid) id: string,
+    @Body() dto: UpdateTermsDTO,
+  ) {
+    return this.properties.updateTerms(ctx, id, dto);
+  }
+
+  @Authed('landlord')
+  @Post('properties/:id/terms/reset')
+  @HttpCode(200)
+  resetTerms(@Auth() ctx: AuthContext, @Param('id', uuid) id: string) {
+    return this.properties.resetTerms(ctx, id);
+  }
+
+  @Authed('tenant')
+  @Post('properties/:id/terms/accept')
+  @HttpCode(200)
+  acceptTerms(@Auth() ctx: AuthContext, @Param('id', uuid) id: string) {
+    return this.properties.acceptTerms(ctx, id);
+  }
+
+  @Authed('landlord', 'caretaker')
+  @Get('properties/:id/terms/acceptances')
+  listAcceptances(@Auth() ctx: AuthContext, @Param('id', uuid) id: string) {
+    return this.properties.listAcceptances(ctx, id);
   }
 }

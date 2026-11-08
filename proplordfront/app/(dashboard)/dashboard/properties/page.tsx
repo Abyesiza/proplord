@@ -1,4 +1,5 @@
 import { Building2, Plus } from "lucide-react";
+import { suspended } from "@/components/skeletons/suspended";
 import Link from "next/link";
 import { buttonStyles } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,13 +7,17 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { getProperties } from "@/lib/data";
 import { location, propertyTypeLabel } from "@/lib/format";
+import { isStaff } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Properties | Proplord" };
 
-export default async function PropertiesPage() {
+export default suspended(PropertiesPage);
+
+async function PropertiesPage() {
   const [user, properties] = await Promise.all([requireUser(), getProperties()]);
   const landlord = user.role === "landlord";
+  const staff = isStaff(user.role);
   const addButton = (
     <Link href="/dashboard/properties/new" className={buttonStyles()}>
       <Plus className="size-4" aria-hidden /> Add property
@@ -22,10 +27,10 @@ export default async function PropertiesPage() {
   return (
     <>
       <PageHeader
-        eyebrow={landlord ? "Portfolio" : "Where you live"}
-        title={landlord ? "Properties" : "My home"}
+        eyebrow={staff ? "Portfolio" : "Where you live"}
+        title={staff ? "Properties" : "My home"}
         description={
-          landlord
+          staff
             ? "Every building you manage, with its units, tenants and billing."
             : "The places you have been added to."
         }
@@ -34,11 +39,13 @@ export default async function PropertiesPage() {
 
       {properties.length === 0 ? (
         <EmptyState
-          title={landlord ? "No properties yet" : "No home yet"}
+          title={staff ? "No properties yet" : "No home yet"}
           description={
             landlord
               ? "Add your first property, then invite tenants and start tracking rent."
-              : "Ask your landlord for an invite link or login."
+              : staff
+                ? "The landlord needs to add you to a property as a caretaker."
+                : "Ask your landlord for an invite link or login."
           }
           action={landlord ? addButton : undefined}
         />

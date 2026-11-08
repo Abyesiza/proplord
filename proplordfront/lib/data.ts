@@ -4,6 +4,10 @@ import { cache } from "react";
 import { api, ApiError } from "./api";
 import { getToken } from "./session";
 import type {
+  AdminLandlord,
+  AdminProperty,
+  AdminStats,
+  RentTracker,
   Charge,
   Invitation,
   Member,
@@ -12,6 +16,8 @@ import type {
   PropertyDetail,
   Receipt,
   Summary,
+  Terms,
+  TermsAcceptances,
 } from "./types";
 
 /** Authenticated read; a dead session sends the visitor back to log in. */
@@ -42,6 +48,19 @@ export const getProperty = cache((id: string) =>
 );
 export const getMembers = (propertyId?: string) =>
   apiAuthed<Member[]>(`/members${qs({ propertyId })}`);
+export const getTenants = async (propertyId?: string) =>
+  (await getMembers(propertyId)).filter((m) => m.role === "tenant");
+export const getCaretakers = async (propertyId?: string) =>
+  (await getMembers(propertyId)).filter((m) => m.role === "caretaker");
+export const getTerms = (propertyId: string) =>
+  apiAuthed<Terms>(`/properties/${propertyId}/terms`);
+export const getTermsAcceptances = (propertyId: string) =>
+  apiAuthed<TermsAcceptances>(`/properties/${propertyId}/terms/acceptances`);
+export const getAdminStats = () => apiAuthed<AdminStats>("/admin/overview");
+export const getAdminLandlords = () => apiAuthed<AdminLandlord[]>("/admin/landlords");
+export const getAdminProperties = () => apiAuthed<AdminProperty[]>("/admin/properties");
+export const getRentTracker = (month?: string, propertyId?: string) =>
+  apiAuthed<RentTracker>(`/dashboard/rent-tracker${qs({ month, propertyId })}`);
 export const getInvitations = (propertyId: string) =>
   apiAuthed<Invitation[]>(`/properties/${propertyId}/invitations`);
 export const getCharges = (propertyId?: string) =>

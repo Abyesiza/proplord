@@ -20,13 +20,13 @@ async function Shell({ children }: { children: ReactNode }) {
       <div className="no-print">
         <DashboardSidebar role={user.role} />
       </div>
-      <div className="lg:pl-64 print:pl-0">
+      <div className="min-w-0 lg:pl-64 print:pl-0">
         <DashboardTopbar
           name={user.fullName ?? user.username ?? "Account"}
           role={user.role}
           properties={properties.map(({ id, name }) => ({ id, name }))}
         />
-        <main className="p-6 lg:p-10">{children}</main>
+        <main className="p-4 sm:p-6 lg:p-10">{children}</main>
       </div>
     </div>
   );

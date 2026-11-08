@@ -6,21 +6,25 @@ import { ActionForm } from "@/components/ui/action-form";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Field, SelectField } from "@/components/ui/form";
-import { getCharges, getMembers, getPayments } from "@/lib/data";
+import { getCharges, getPayments, getTenants } from "@/lib/data";
 import { amountStep, memberOptions } from "@/lib/format";
 import type { PropertyDetail } from "@/lib/types";
 
 export async function BillingTab({
   property,
+  staff,
   landlord,
 }: {
   property: PropertyDetail;
+  /** Landlords and caretakers: see every tenant, raise charges and record payments. */
+  staff: boolean;
+  /** Only landlords can cancel charges. */
   landlord: boolean;
 }) {
   const [charges, payments, members] = await Promise.all([
     getCharges(property.id),
     getPayments(property.id),
-    landlord ? getMembers(property.id) : Promise.resolve([]),
+    staff ? getTenants(property.id) : Promise.resolve([]),
   ]);
   const { currency } = property;
 
@@ -30,9 +34,9 @@ export async function BillingTab({
         <Card>
           <CardHeader title="Charges" description="Rent and other amounts tenants owe" />
           {charges.length === 0 ? (
-            <EmptyState title="No charges yet" description={landlord ? "Create a charge for a tenant." : "Nothing has been billed to you."} />
+            <EmptyState title="No charges yet" description={staff ? "Create a charge for a tenant." : "Nothing has been billed to you."} />
           ) : (
-            <ChargesTable charges={charges} currency={currency} showTenant={landlord} canCancel={landlord} />
+            <ChargesTable charges={charges} currency={currency} showTenant={staff} canCancel={landlord} />
           )}
         </Card>
         <Card>
@@ -40,12 +44,12 @@ export async function BillingTab({
           {payments.length === 0 ? (
             <EmptyState title="No payments yet" />
           ) : (
-            <PaymentsTable payments={payments} currency={currency} showTenant={landlord} />
+            <PaymentsTable payments={payments} currency={currency} showTenant={staff} />
           )}
         </Card>
       </div>
 
-      {landlord && (
+      {staff && (
         <div className="grid gap-5 xl:grid-cols-2">
           <Card>
             <CardHeader title="New charge" />

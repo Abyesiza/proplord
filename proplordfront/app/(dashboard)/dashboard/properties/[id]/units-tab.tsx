@@ -8,6 +8,7 @@ import { Field } from "@/components/ui/form";
 import { Table, Td } from "@/components/ui/table";
 import { amountStep, money } from "@/lib/format";
 import type { PropertyDetail } from "@/lib/types";
+import { EditUnitButton } from "./edit-unit-button";
 
 export function UnitsTab({ property }: { property: PropertyDetail }) {
   return (
@@ -23,11 +24,19 @@ export function UnitsTab({ property }: { property: PropertyDetail }) {
                 <Td className="font-semibold">{unit.name}</Td>
                 <Td>{money(unit.rentAmount, property.currency)}</Td>
                 <Td className="text-right">
-                  <form action={deleteUnit.bind(null, property.id, unit.id)}>
-                    <Button variant="ghost" size="sm" aria-label={`Delete unit ${unit.name}`}>
-                      <Trash2 className="size-4" aria-hidden />
-                    </Button>
-                  </form>
+                  <div className="flex items-center justify-end gap-1">
+                    <EditUnitButton
+                      propertyId={property.id}
+                      unit={unit}
+                      currency={property.currency}
+                      step={amountStep(property.currency)}
+                    />
+                    <form action={deleteUnit.bind(null, property.id, unit.id)}>
+                      <Button variant="ghost" size="sm" aria-label={`Delete unit ${unit.name}`}>
+                        <Trash2 className="size-4" aria-hidden />
+                      </Button>
+                    </form>
+                  </div>
                 </Td>
               </tr>
             ))}

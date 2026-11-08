@@ -21,14 +21,14 @@ export function StatCard({
   tone?: keyof typeof tones;
 }) {
   return (
-    <div className={cn("rounded-md p-6 shadow-sm", tones[tone])}>
+    <div className={cn("min-w-0 rounded-md p-5 shadow-sm sm:p-6", tones[tone])}>
       <div className="flex items-center justify-between">
         <p className="text-sm font-semibold opacity-80">{label}</p>
         <span className="grid size-10 place-items-center rounded-full bg-background/20">
           <Icon className="size-5" aria-hidden />
         </span>
       </div>
-      <p className="mt-4 text-3xl font-black tracking-tight">{value}</p>
+      <p className="mt-4 break-words text-2xl font-black tracking-tight sm:text-3xl">{value}</p>
       {hint && <p className="mt-1 text-sm opacity-80">{hint}</p>}
     </div>
   );

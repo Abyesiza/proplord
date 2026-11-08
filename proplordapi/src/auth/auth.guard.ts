@@ -14,7 +14,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Request } from 'express';
 import { SupabaseService } from '../supabase/supabase.service';
 
-export type UserRole = 'landlord' | 'tenant';
+export type UserRole = 'admin' | 'landlord' | 'caretaker' | 'tenant';
 
 /** Authenticated caller; `db` is a client whose queries run under the caller's RLS. */
 export interface AuthContext {

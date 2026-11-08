@@ -8,7 +8,7 @@ const COOKIE = "pl_session";
 
 export type User = {
   id: string;
-  role: "landlord" | "tenant";
+  role: "admin" | "landlord" | "caretaker" | "tenant";
   fullName: string | null;
   email: string | null;
   username: string | null;
@@ -51,5 +51,11 @@ export const getUser = cache(async (): Promise<User | null> => {
 export async function requireUser() {
   const user = await getUser();
   if (!user) redirect("/login");
+  return user;
+}
+
+export async function requireAdmin() {
+  const user = await requireUser();
+  if (user.role !== "admin") redirect("/dashboard");
   return user;
 }

@@ -8,7 +8,7 @@ export const Bone = ({ className }: { className?: string }) => (
 export function PageSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading">
-      <Bone className="mb-8 h-12 w-72" />
+      <Bone className="mb-8 h-12 w-full max-w-72" />
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, i) => (
           <Bone key={i} className="h-36" />
@@ -27,7 +27,7 @@ export function DashboardShellSkeleton() {
     <div className="min-h-screen lg:pl-64">
       <Bone className="fixed inset-y-0 left-0 hidden w-64 rounded-none lg:block" />
       <Bone className="h-16 rounded-none" />
-      <main className="p-6 lg:p-10">
+      <main className="p-4 sm:p-6 lg:p-10">
         <PageSkeleton />
       </main>
     </div>

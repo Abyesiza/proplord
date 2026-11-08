@@ -1,4 +1,7 @@
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { suspended } from "@/components/skeletons/suspended";
 import { createProperty } from "@/actions/manage";
 import { ActionForm } from "@/components/ui/action-form";
 import { Card } from "@/components/ui/card";
@@ -9,12 +12,20 @@ import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Add property | Proplord" };
 
-export default async function NewPropertyPage() {
+export default suspended(NewPropertyPage);
+
+async function NewPropertyPage() {
   const user = await requireUser();
   if (user.role !== "landlord") redirect("/dashboard/properties");
 
   return (
     <>
+      <Link
+        href="/dashboard/properties"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-link hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <ArrowLeft className="size-4" aria-hidden /> Back to properties
+      </Link>
       <PageHeader eyebrow="Properties" title="Add a property" description="Tell us what it is and how many units it has. Rent is in Ugandan shillings (UGX)." />
       <Card>
         <ActionForm action={createProperty} submitLabel="Create property" columns={3}>

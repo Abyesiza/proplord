@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2 } from "lucide-react";
+import { Building2, ChevronDown } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FILTERED_PATHS } from "@/lib/nav";
 
@@ -28,7 +28,7 @@ export function PropertyFilter({
   }
 
   return (
-    <label className="no-print relative flex min-w-0 items-center">
+    <label className="no-print relative flex min-w-0 max-w-64 flex-1 items-center">
       <span className="sr-only">Filter by property</span>
       <Building2
         className="pointer-events-none absolute left-4 size-4 text-muted-foreground"
@@ -37,7 +37,7 @@ export function PropertyFilter({
       <select
         value={value}
         onChange={(e) => change(e.target.value)}
-        className="h-11 w-full min-w-0 max-w-64 appearance-none truncate rounded-full border border-input bg-background pl-10 pr-5 text-sm font-semibold text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/20"
+        className="h-11 w-full min-w-0 appearance-none truncate rounded-full border border-input bg-background pl-10 pr-10 text-sm font-semibold text-foreground outline-none transition focus:border-ring focus:ring-4 focus:ring-ring/20"
       >
         <option value="">All properties</option>
         {properties.map((p) => (
@@ -46,6 +46,10 @@ export function PropertyFilter({
           </option>
         ))}
       </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-4 size-4 text-muted-foreground"
+        aria-hidden
+      />
     </label>
   );
 }

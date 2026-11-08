@@ -1,16 +1,20 @@
 import Link from "next/link";
+import { suspended } from "@/components/skeletons/suspended";
 import { redirect } from "next/navigation";
 import { RecordPaymentForm } from "@/components/dashboard/record-payment-form";
 import { buttonStyles } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { getCharges, getMembers, getProperties } from "@/lib/data";
+import { getCharges, getProperties, getTenants } from "@/lib/data";
+import { isStaff } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Record payment | Proplord" };
 
-export default async function RecordPaymentPage({
+export default suspended(RecordPaymentPage);
+
+async function RecordPaymentPage({
   searchParams,
 }: PageProps<"/dashboard/payments/new">) {
   const [user, { propertyId }, properties] = await Promise.all([
@@ -18,7 +22,7 @@ export default async function RecordPaymentPage({
     searchParams,
     getProperties(),
   ]);
-  if (user.role !== "landlord") redirect("/dashboard/payments");
+  if (!isStaff(user.role)) redirect("/dashboard/payments");
   if (properties.length === 1 && typeof propertyId !== "string") {
     redirect(`/dashboard/payments/new?propertyId=${properties[0].id}`);
   }
@@ -63,7 +67,7 @@ async function PropertyForm({
   currency: string;
   name: string;
 }) {
-  const [members, charges] = await Promise.all([getMembers(propertyId), getCharges(propertyId)]);
+  const [members, charges] = await Promise.all([getTenants(propertyId), getCharges(propertyId)]);
   return (
     <Card>
       <CardHeader title={name} />

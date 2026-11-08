@@ -1,22 +1,26 @@
 import Link from "next/link";
+import { suspended } from "@/components/skeletons/suspended";
 import { redirect } from "next/navigation";
 import { Badge, StatusBadge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Table, Td } from "@/components/ui/table";
-import { getMembers, getProperties, selectedPropertyId } from "@/lib/data";
-import { formatDate, humanize } from "@/lib/format";
+import { getProperties, getTenants, selectedPropertyId } from "@/lib/data";
+import { formatDate, frequencyLabel } from "@/lib/format";
+import { isStaff } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Tenants | Proplord" };
 
-export default async function TenantsPage({ searchParams }: PageProps<"/dashboard/tenants">) {
+export default suspended(TenantsPage);
+
+async function TenantsPage({ searchParams }: PageProps<"/dashboard/tenants">) {
   const user = await requireUser();
-  if (user.role !== "landlord") redirect("/dashboard");
+  if (!isStaff(user.role)) redirect("/dashboard");
 
   const propertyId = await selectedPropertyId(searchParams);
-  const [members, properties] = await Promise.all([getMembers(propertyId), getProperties()]);
+  const [members, properties] = await Promise.all([getTenants(propertyId), getProperties()]);
   const propertyName = new Map(properties.map((p) => [p.id, p.name]));
 
   return (
@@ -33,7 +37,7 @@ export default async function TenantsPage({ searchParams }: PageProps<"/dashboar
             description="Open a property and invite tenants by email or create a login for them."
           />
         ) : (
-          <Table headers={["Tenant", "Property", "Unit", "Joined via", "Since", "Status"]}>
+          <Table headers={["Tenant", "Property", "Unit", "Pays", "Since", "Status"]}>
             {members.map((m) => (
               <tr key={m.id}>
                 <Td className="font-semibold">
@@ -52,7 +56,7 @@ export default async function TenantsPage({ searchParams }: PageProps<"/dashboar
                 </Td>
                 <Td>{m.unit?.name ?? "Unassigned"}</Td>
                 <Td>
-                  <Badge variant="outline">{humanize(m.origin)}</Badge>
+                  <Badge variant="outline">{frequencyLabel(m.paymentFrequency)}</Badge>
                 </Td>
                 <Td>{formatDate(m.createdAt)}</Td>
                 <Td>

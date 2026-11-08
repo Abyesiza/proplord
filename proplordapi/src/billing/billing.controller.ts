@@ -38,7 +38,7 @@ export class BillingController {
     return this.billing.listCharges(ctx, propertyId, memberId);
   }
 
-  @Authed('landlord')
+  @Authed('landlord', 'caretaker')
   @Post('properties/:propertyId/charges')
   createCharge(
     @Auth() ctx: AuthContext,
@@ -69,7 +69,7 @@ export class BillingController {
     return this.billing.getPayment(ctx, id);
   }
 
-  @Authed('landlord')
+  @Authed('landlord', 'caretaker')
   @Post('properties/:propertyId/payments')
   recordPayment(
     @Auth() ctx: AuthContext,

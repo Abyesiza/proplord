@@ -15,4 +15,15 @@ export class DashboardController {
   ) {
     return this.dashboard.summary(ctx, propertyId);
   }
+
+  @Authed('admin', 'landlord', 'caretaker')
+  @Get('rent-tracker')
+  rentTracker(
+    @Auth() ctx: AuthContext,
+    @Query('month') month?: string,
+    @Query('propertyId', new ParseUUIDPipe({ optional: true }))
+    propertyId?: string,
+  ) {
+    return this.dashboard.rentTracker(ctx, month, propertyId);
+  }
 }

@@ -1,6 +1,9 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
   IsIn,
   IsInt,
   IsNotEmpty,
@@ -11,6 +14,7 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { trim } from '../auth/auth.dto';
 
@@ -108,3 +112,32 @@ export class CreateUnitDTO {
 }
 
 export class UpdateUnitDTO extends PartialType(CreateUnitDTO) {}
+
+export class TermClauseDTO {
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(120)
+  title!: string;
+
+  @Transform(trim)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(2000)
+  body!: string;
+
+  @IsBoolean()
+  required!: boolean;
+}
+
+export class UpdateTermsDTO {
+  /** Off hides the terms from tenants without losing the text. */
+  @IsBoolean()
+  enabled!: boolean;
+
+  @IsArray()
+  @ArrayMaxSize(50)
+  @ValidateNested({ each: true })
+  @Type(() => TermClauseDTO)
+  clauses!: TermClauseDTO[];
+}

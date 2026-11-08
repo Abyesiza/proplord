@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { api, errorMessage } from "@/lib/api";
 import type { FormState } from "@/lib/form-state";
 import { getToken } from "@/lib/session";
-import type { Payment, Property } from "@/lib/types";
+import type { Payment, Property, TermClause, Terms } from "@/lib/types";
 
 const text = (data: FormData, name: string) => String(data.get(name) ?? "").trim();
 const optional = (data: FormData, name: string) => text(data, name) || undefined;
@@ -68,6 +68,76 @@ export async function createUnit(
   );
 }
 
+export async function updateUnit(
+  propertyId: string,
+  unitId: string,
+  _: FormState,
+  data: FormData,
+): Promise<FormState> {
+  const result = await call(`/units/${unitId}`, "PATCH", {
+    name: text(data, "name"),
+    rentAmount: Number(text(data, "rentAmount")),
+  });
+  if (!result.ok) return { error: result.error };
+  revalidatePath(propertyPath(propertyId));
+  return { ok: true, message: "Unit updated" };
+}
+
+export async function createCaretakerLogin(
+  propertyId: string,
+  _: FormState,
+  data: FormData,
+): Promise<FormState> {
+  const username = text(data, "username");
+  return saveInProperty(
+    propertyId,
+    `/properties/${propertyId}/members`,
+    {
+      role: "caretaker",
+      fullName: text(data, "fullName"),
+      username,
+      password: String(data.get("password") ?? ""),
+    },
+    `Caretaker login created. Give ${username.toLowerCase()} their username and password.`,
+  );
+}
+
+export async function updateTenantPlan(
+  propertyId: string,
+  memberId: string,
+  _: FormState,
+  data: FormData,
+): Promise<FormState> {
+  const agreed = text(data, "agreedAmount");
+  const result = await call(`/members/${memberId}`, "PATCH", {
+    unitId: text(data, "unitId") || null,
+    paymentFrequency: text(data, "paymentFrequency"),
+    agreedAmount: agreed ? Number(agreed) : null,
+  });
+  if (!result.ok) return { error: result.error };
+  revalidatePath(propertyPath(propertyId));
+  return { ok: true, message: "Tenant updated" };
+}
+
+export type TermsResult = { error?: string; terms?: Terms };
+
+export async function saveTerms(
+  propertyId: string,
+  input: { enabled: boolean; clauses: TermClause[] },
+): Promise<TermsResult> {
+  const result = await call<Terms>(`/properties/${propertyId}/terms`, "PUT", input);
+  if (!result.ok) return { error: result.error };
+  revalidatePath(propertyPath(propertyId));
+  return { terms: result.data };
+}
+
+export async function resetTerms(propertyId: string): Promise<TermsResult> {
+  const result = await call<Terms>(`/properties/${propertyId}/terms/reset`, "POST");
+  if (!result.ok) return { error: result.error };
+  revalidatePath(propertyPath(propertyId));
+  return { terms: result.data };
+}
+
 export async function inviteTenant(
   propertyId: string,
   _: FormState,
@@ -127,6 +197,8 @@ export async function recordPayment(
 ): Promise<FormState> {
   // A chosen charge is submitted as "chargeId:memberId" so the tenant always matches it.
   const [chargeId, chargeMember] = text(data, "charge").split(":");
+  const covers = text(data, "coverage") === "periods";
+  const start = text(data, "periodStart");
   const result = await call<Payment>(`/properties/${propertyId}/payments`, "POST", {
     memberId: chargeMember || text(data, "memberId"),
     chargeId: chargeId || undefined,
@@ -134,6 +206,9 @@ export async function recordPayment(
     method: text(data, "method"),
     reference: optional(data, "reference"),
     note: optional(data, "note"),
+    // Month pickers send YYYY-MM; the API wants a full date.
+    periodStart: covers ? (start.length === 7 ? `${start}-01` : start) : undefined,
+    periodCount: covers ? Number(text(data, "periodCount")) : undefined,
   });
   if (!result.ok) return { error: result.error };
 
@@ -162,4 +237,8 @@ export async function revokeInvitation(propertyId: string, invitationId: string)
 
 export async function cancelCharge(propertyId: string, chargeId: string) {
   await mutate(propertyId, `/charges/${chargeId}/cancel`, "POST");
+}
+
+export async function acceptTerms(propertyId: string) {
+  await mutate(propertyId, `/properties/${propertyId}/terms/accept`, "POST");
 }

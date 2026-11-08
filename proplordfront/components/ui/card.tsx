@@ -11,7 +11,7 @@ export function Card({
   return (
     <section
       className={cn(
-        "rounded-md border border-border bg-card p-6 text-card-foreground shadow-sm",
+        "min-w-0 rounded-md border border-border bg-card p-4 text-card-foreground shadow-sm sm:p-6",
         className,
       )}
     >
@@ -31,7 +31,7 @@ export function CardHeader({
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-      <div>
+      <div className="min-w-0">
         <h2 className="text-lg font-bold tracking-tight">{title}</h2>
         {description && (
           <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>

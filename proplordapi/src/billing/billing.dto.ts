@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsIn,
+  IsInt,
   IsISO8601,
   IsNotEmpty,
   IsNumber,
@@ -74,4 +75,18 @@ export class CreatePaymentDTO {
   @IsOptional()
   @IsISO8601()
   paidAt?: string;
+
+  /** First period covered, YYYY-MM-DD (any day of the month for month-based plans). */
+  @IsOptional()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'periodStart must be YYYY-MM-DD',
+  })
+  periodStart?: string;
+
+  /** How many billing periods this payment covers; `amount` must equal count x per-period amount. */
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(36)
+  periodCount?: number;
 }

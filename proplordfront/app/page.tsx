@@ -54,14 +54,14 @@ const pill =
 function Mockup() {
   return (
     <div className="relative mx-auto w-full max-w-md">
-      <div className="rounded-lg border border-border bg-card p-6 shadow-2xl shadow-primary/20">
-        <div className="flex items-center justify-between">
+      <div className="rounded-lg border border-border bg-card p-4 shadow-2xl shadow-primary/20 sm:p-6">
+        <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-sm text-muted-foreground">Sunset Heights</p>
-            <p className="text-3xl font-black">UGX 12,480,000</p>
+            <p className="text-2xl font-black sm:text-3xl">UGX 12,480,000</p>
             <p className="text-sm text-muted-foreground">collected this month</p>
           </div>
-          <span className="rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground">
+          <span className="shrink-0 rounded-full bg-accent px-3 py-1.5 text-sm font-bold text-accent-foreground sm:px-4">
             92% paid
           </span>
         </div>
@@ -74,7 +74,7 @@ function Mockup() {
           ].map(([unit, name, status, tone]) => (
             <li
               key={unit}
-              className="flex items-center justify-between rounded-full bg-background px-5 py-3"
+              className="flex items-center justify-between gap-2 rounded-full bg-background px-4 py-3 sm:px-5"
             >
               <span>
                 <span className="font-semibold">{unit}</span>
@@ -103,10 +103,10 @@ function Mockup() {
 export default function Home() {
   return (
     <div id="top" className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-50 px-4 pt-4 lg:px-12">
+      <header className="sticky top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4 lg:px-12">
         <nav
           aria-label="Main"
-          className="flex w-full items-center justify-between rounded-full border border-border bg-background/80 px-4 py-2.5 backdrop-blur sm:px-6"
+          className="flex w-full items-center justify-between gap-2 rounded-full border border-border bg-background/80 px-3 py-2 backdrop-blur sm:px-6 sm:py-2.5"
         >
           <Logo />
           <div className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
@@ -118,13 +118,13 @@ export default function Home() {
             <ThemeToggle className="hidden sm:inline-flex" />
             <Link
               href="/login"
-              className="rounded-full px-5 py-2 text-sm font-semibold hover:text-link"
+              className="rounded-full px-3 py-2 text-sm font-semibold hover:text-link max-[380px]:hidden sm:px-5"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="rounded-full bg-accent px-5 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary"
+              className="whitespace-nowrap rounded-full bg-accent px-3 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary sm:px-5"
             >
               Get started
             </Link>
@@ -133,13 +133,9 @@ export default function Home() {
       </header>
 
       <main>
-        <section className="grid items-center gap-16 px-6 pb-24 pt-16 lg:grid-cols-2 lg:px-12 lg:pt-24">
+        <section className="grid items-center gap-12 px-4 pb-24 pt-10 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-12 lg:pt-24">
           <div>
-            <p className="inline-block rounded-full border border-border px-4 py-1.5 text-sm font-medium">
-              <span className="mr-2 inline-block size-2 rounded-full bg-primary" />
-              Built for landlords
-            </p>
-            <h1 className="mt-6 text-5xl font-black leading-[1.02] tracking-tight sm:text-7xl">
+            <h1 className="mt-6 text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
               Run every property.{" "}
               <span className="rounded-md bg-accent px-3 text-accent-foreground">
                 Collect
@@ -163,15 +159,15 @@ export default function Home() {
           <Mockup />
         </section>
 
-        <section id="features" className="px-6 py-20 lg:px-12">
-          <h2 className="max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
+        <section id="features" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-12">
+          <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">
             Everything a landlord needs, nothing they don&apos;t.
           </h2>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {features.map((f, i) => (
               <article
                 key={f.title}
-                className={`rounded-md p-8 ${f.tone} ${i === 0 ? "md:col-span-2" : ""}`}
+                className={`rounded-md p-6 sm:p-8 ${f.tone} ${i === 0 ? "md:col-span-2" : ""}`}
               >
                 <h3 className="text-2xl font-black">{f.title}</h3>
                 <p className="mt-3 opacity-80">{f.body}</p>
@@ -180,15 +176,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how" className="px-6 py-20 lg:px-12">
-          <h2 className="text-4xl font-black tracking-tight sm:text-5xl">
+        <section id="how" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-12">
+          <h2 className="text-3xl font-black tracking-tight sm:text-5xl">
             Up and running in three steps.
           </h2>
           <ol className="mt-12 grid gap-5 md:grid-cols-3">
             {steps.map((s) => (
               <li
                 key={s.n}
-                className="rounded-md border border-border p-8"
+                className="rounded-md border border-border p-6 sm:p-8"
               >
                 <span className="grid size-14 place-items-center rounded-full bg-accent text-lg font-black text-accent-foreground">
                   {s.n}
@@ -200,23 +196,23 @@ export default function Home() {
           </ol>
         </section>
 
-        <section id="invite" className="px-6 py-20 lg:px-12">
+        <section id="invite" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-12">
           <div className="grid gap-5 md:grid-cols-2">
-            <div className="rounded-lg bg-primary p-10 text-primary-foreground">
+            <div className="rounded-lg bg-primary p-6 text-primary-foreground sm:p-10">
               <p className="text-sm font-bold uppercase tracking-widest">Option one</p>
               <h3 className="mt-3 text-3xl font-black">Invite by email</h3>
               <p className="mt-3">
                 Enter an email, pick the property and unit. Your tenant gets a
                 secure link and sets their own password.
               </p>
-              <div className="mt-8 rounded-full bg-black px-6 py-3 text-sm text-white">
+              <div className="mt-8 flex flex-wrap items-center gap-2 rounded-3xl bg-black px-5 py-3 text-sm text-white sm:rounded-full sm:px-6">
                 tenant@email.com
-                <span className="ml-3 rounded-full bg-accent px-3 py-1 font-bold text-accent-foreground">
+                <span className="rounded-full bg-accent px-3 py-1 font-bold text-accent-foreground sm:ml-1">
                   Send invite
                 </span>
               </div>
             </div>
-            <div className="rounded-lg bg-accent p-10 text-accent-foreground">
+            <div className="rounded-lg bg-accent p-6 text-accent-foreground sm:p-10">
               <p className="text-sm font-bold uppercase tracking-widest">Option two</p>
               <h3 className="mt-3 text-3xl font-black">Create their login</h3>
               <p className="mt-3">
@@ -235,9 +231,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="get-started" className="px-6 py-20 lg:px-12">
-          <div className="hero-glow rounded-lg px-8 py-16 text-center sm:px-16">
-            <h2 className="mx-auto max-w-2xl text-4xl font-black tracking-tight sm:text-5xl">
+        <section id="get-started" className="px-4 py-14 sm:px-6 sm:py-20 lg:px-12">
+          <div className="hero-glow rounded-lg px-5 py-12 text-center sm:px-16 sm:py-16">
+            <h2 className="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">
               Your properties deserve <span className="text-link">better</span>{" "}
               than a spreadsheet.
             </h2>
@@ -256,7 +252,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="flex w-full flex-wrap items-center justify-between gap-4 px-6 py-10 text-sm text-muted-foreground lg:px-12">
+      <footer className="flex w-full flex-wrap items-center justify-between gap-4 px-4 py-10 text-sm text-muted-foreground sm:px-6 lg:px-12">
         <Logo />
         <p>&copy; Proplord. All rights reserved.</p>
       </footer>

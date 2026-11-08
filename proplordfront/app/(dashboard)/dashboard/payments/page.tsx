@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { suspended } from "@/components/skeletons/suspended";
 import { ChargesTable } from "@/components/dashboard/charges-table";
 import { PaymentsTable } from "@/components/dashboard/payments-table";
 import { buttonStyles } from "@/components/ui/button";
@@ -6,11 +7,14 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { getCharges, getPayments, getSummary, selectedPropertyId } from "@/lib/data";
+import { isStaff } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
 export const metadata = { title: "Payments | Proplord" };
 
-export default async function PaymentsPage({ searchParams }: PageProps<"/dashboard/payments">) {
+export default suspended(PaymentsPage);
+
+async function PaymentsPage({ searchParams }: PageProps<"/dashboard/payments">) {
   const propertyId = await selectedPropertyId(searchParams);
   const [user, charges, payments, summary] = await Promise.all([
     requireUser(),
@@ -18,7 +22,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/dashboa
     getPayments(propertyId),
     getSummary(propertyId),
   ]);
-  const landlord = user.role === "landlord";
+  const staff = isStaff(user.role);
   const open = charges.filter((c) => ["pending", "partial", "overdue"].includes(c.status));
 
   return (
@@ -26,9 +30,9 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/dashboa
       <PageHeader
         eyebrow="Money"
         title="Payments"
-        description={landlord ? "What tenants owe and what you have collected." : "What you owe and what you have paid."}
+        description={staff ? "What tenants owe and what you have collected." : "What you owe and what you have paid."}
         actions={
-          landlord && (
+          staff && (
             <Link
               href={propertyId ? `/dashboard/payments/new?propertyId=${propertyId}` : "/dashboard/payments/new"}
               className={buttonStyles()}
@@ -44,7 +48,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/dashboa
           {open.length === 0 ? (
             <EmptyState title="Nothing outstanding" />
           ) : (
-            <ChargesTable charges={open} currency={summary.currency} showTenant={landlord} />
+            <ChargesTable charges={open} currency={summary.currency} showTenant={staff} />
           )}
         </Card>
         <Card>
@@ -52,7 +56,7 @@ export default async function PaymentsPage({ searchParams }: PageProps<"/dashboa
           {payments.length === 0 ? (
             <EmptyState title="No payments yet" />
           ) : (
-            <PaymentsTable payments={payments} currency={summary.currency} showTenant={landlord} />
+            <PaymentsTable payments={payments} currency={summary.currency} showTenant={staff} />
           )}
         </Card>
       </div>

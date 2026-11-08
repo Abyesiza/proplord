@@ -1,6 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { AuthContext } from '../auth/auth.guard';
 import { unwrap } from '../common/db-error';
+import { SupabaseService } from '../supabase/supabase.service';
 
 const WHO = 'id, unit:units(name), profile:profiles(full_name, username)';
 
@@ -19,6 +24,42 @@ const balanceOf = (charge: ChargeRow) =>
 /** Aggregates are computed under the caller's RLS, so tenants only ever see their own figures. */
 @Injectable()
 export class DashboardService {
+  constructor(private readonly supabase: SupabaseService) {}
+
+  /**
+   * Who has paid for a month (YYYY-MM, default current). Admins see every property;
+   * landlords and caretakers only the ones RLS lets them read.
+   */
+  async rentTracker(ctx: AuthContext, month?: string, propertyId?: string) {
+    if (month && !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      throw new BadRequestException('month must be YYYY-MM');
+    }
+    const profile = unwrap(
+      await ctx.db
+        .from('profiles')
+        .select('role')
+        .eq('id', ctx.userId)
+        .single<{ role: string }>(),
+    );
+
+    let scope: string[] | null = null;
+    if (profile.role !== 'admin') {
+      const owned = unwrap(await ctx.db.from('properties').select('id'));
+      scope = (owned as { id: string }[]).map((p) => p.id);
+      if (propertyId && !scope.includes(propertyId)) {
+        throw new NotFoundException('Not found');
+      }
+    }
+
+    return unwrap(
+      await this.supabase.admin.rpc('rent_tracker', {
+        p_month: `${month ?? new Date().toISOString().slice(0, 7)}-01`,
+        p_scope: scope,
+        p_property: propertyId ?? null,
+      }),
+    );
+  }
+
   async summary(ctx: AuthContext, propertyId?: string) {
     const monthStart = new Date();
     monthStart.setUTCDate(1);

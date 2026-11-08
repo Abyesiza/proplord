@@ -1,9 +1,12 @@
 import {
   Building2,
+  CalendarCheck,
   CreditCard,
   LayoutDashboard,
+  MapPin,
   Receipt,
   Users,
+  UsersRound,
   type LucideIcon,
 } from "lucide-react";
 import type { Role } from "./types";
@@ -17,12 +20,15 @@ export type NavItem = {
 
 /** Single source for sidebar entries; roles decide who sees what. */
 const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, roles: ["landlord", "tenant"] },
-  { href: "/dashboard/properties", label: "Properties", icon: Building2, roles: ["landlord"] },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, roles: ["admin", "landlord", "caretaker", "tenant"] },
+  { href: "/dashboard/admin/landlords", label: "Landlords", icon: UsersRound, roles: ["admin"] },
+  { href: "/dashboard/admin/properties", label: "All properties", icon: MapPin, roles: ["admin"] },
+  { href: "/dashboard/properties", label: "Properties", icon: Building2, roles: ["landlord", "caretaker"] },
   { href: "/dashboard/properties", label: "My home", icon: Building2, roles: ["tenant"] },
-  { href: "/dashboard/tenants", label: "Tenants", icon: Users, roles: ["landlord"] },
-  { href: "/dashboard/payments", label: "Payments", icon: CreditCard, roles: ["landlord", "tenant"] },
-  { href: "/dashboard/receipts", label: "Receipts", icon: Receipt, roles: ["landlord", "tenant"] },
+  { href: "/dashboard/tenants", label: "Tenants", icon: Users, roles: ["landlord", "caretaker"] },
+  { href: "/dashboard/payments", label: "Payments", icon: CreditCard, roles: ["landlord", "caretaker", "tenant"] },
+  { href: "/dashboard/payment-tracker", label: "Payment tracker", icon: CalendarCheck, roles: ["admin", "landlord", "caretaker"] },
+  { href: "/dashboard/receipts", label: "Receipts", icon: Receipt, roles: ["landlord", "caretaker", "tenant"] },
 ];
 
 export const navFor = (role: Role) =>
