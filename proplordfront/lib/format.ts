@@ -1,4 +1,4 @@
-import type { Frequency, Member, Who } from "./types";
+import type { Frequency, Member, Payment, Who } from "./types";
 
 /** Ugandan shillings by default; UGX has no minor unit so it prints without decimals. */
 export const money = (amount: number, currency = "UGX") =>
@@ -46,6 +46,25 @@ export const memberOptions = (members: Member[]) =>
       value: m.id,
       label: `${m.profile?.fullName ?? m.profile?.username ?? "Unknown"}${m.unit ? ` (${m.unit.name})` : ""}`,
     }));
+
+/** Per tenant, the date their paid periods run up to (exclusive): where the next payment should start. */
+export function paidThroughByMember(payments: Payment[]): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const p of payments) {
+    if (!p.periodEnd || (p.status !== "completed" && p.status !== "pending")) continue;
+    if (!result[p.memberId] || p.periodEnd > result[p.memberId]) result[p.memberId] = p.periodEnd;
+  }
+  return result;
+}
+
+/** Value for the first-period input: right after what is already paid, else today. */
+export function firstOpenPeriod(resume: string | undefined, today: string, biweekly: boolean): string {
+  const from = new Date(`${resume ?? today}T00:00:00Z`);
+  // Month plans start on the 1st, so a part-covered month moves to the next one.
+  if (!biweekly && resume && from.getUTCDate() !== 1) from.setUTCMonth(from.getUTCMonth() + 1, 1);
+  const iso = from.toISOString().slice(0, 10);
+  return biweekly ? iso : iso.slice(0, 7);
+}
 
 export const location = (p: {
   addressLine?: string | null;

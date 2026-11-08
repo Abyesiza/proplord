@@ -5,6 +5,8 @@ import { recordPayment } from "@/actions/manage";
 import { Field, FormError, SelectField, SubmitButton } from "@/components/ui/form";
 import {
   amountStep,
+  firstOpenPeriod,
+  formatDate,
   FREQUENCIES,
   humanize,
   installment,
@@ -23,11 +25,14 @@ export function RecordPaymentForm({
   currency,
   members,
   charges,
+  paidThrough = {},
 }: {
   propertyId: string;
   currency: string;
   members: Member[];
   charges: Charge[];
+  /** Member id to the date their paid periods run up to; new periods start there. */
+  paidThrough?: Record<string, string>;
 }) {
   const [state, action] = useActionState(recordPayment.bind(null, propertyId), undefined);
   const [charge, setCharge] = useState("");
@@ -48,6 +53,8 @@ export function RecordPaymentForm({
   const plan = member && FREQUENCIES.find((f) => f.value === member.paymentFrequency);
   const perPeriod = member ? installment(member) : 0;
   const byPeriods = Boolean(plan) && perPeriod > 0 && choice === "periods";
+  const resume = member ? paidThrough[member.id] : undefined;
+  const lastPaid = resume && new Date(new Date(`${resume}T00:00:00Z`).getTime() - 86_400_000).toISOString();
 
   const periods = Math.min(36, Math.max(1, Math.floor(Number(count)) || 1));
   const total = round2(perPeriod * periods);
@@ -123,12 +130,18 @@ export function RecordPaymentForm({
         {byPeriods ? (
           <>
             <Field
-              key={plan?.value}
+              key={`${member?.id}-${plan?.value}`}
               label={plan?.value === "biweekly" ? "First period starts" : "First month"}
               name="periodStart"
               type={plan?.value === "biweekly" ? "date" : "month"}
-              defaultValue={plan?.value === "biweekly" ? today : today.slice(0, 7)}
-              hint={plan?.value === "biweekly" ? undefined : "YYYY-MM"}
+              defaultValue={firstOpenPeriod(resume, today, plan?.value === "biweekly")}
+              hint={
+                lastPaid
+                  ? `Already paid up to ${formatDate(lastPaid)}, so this starts right after.`
+                  : plan?.value === "biweekly"
+                    ? undefined
+                    : "YYYY-MM"
+              }
             />
             <Field
               label={`How many ${plan?.noun}s`}

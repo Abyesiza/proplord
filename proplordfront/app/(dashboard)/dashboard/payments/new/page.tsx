@@ -6,7 +6,8 @@ import { buttonStyles } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { getCharges, getProperties, getTenants } from "@/lib/data";
+import { getCharges, getPayments, getProperties, getTenants } from "@/lib/data";
+import { paidThroughByMember } from "@/lib/format";
 import { isStaff } from "@/lib/roles";
 import { requireUser } from "@/lib/session";
 
@@ -67,11 +68,21 @@ async function PropertyForm({
   currency: string;
   name: string;
 }) {
-  const [members, charges] = await Promise.all([getTenants(propertyId), getCharges(propertyId)]);
+  const [members, charges, payments] = await Promise.all([
+    getTenants(propertyId),
+    getCharges(propertyId),
+    getPayments(propertyId),
+  ]);
   return (
     <Card>
       <CardHeader title={name} />
-      <RecordPaymentForm propertyId={propertyId} currency={currency} members={members} charges={charges} />
+      <RecordPaymentForm
+        propertyId={propertyId}
+        currency={currency}
+        members={members}
+        charges={charges}
+        paidThrough={paidThroughByMember(payments)}
+      />
     </Card>
   );
 }

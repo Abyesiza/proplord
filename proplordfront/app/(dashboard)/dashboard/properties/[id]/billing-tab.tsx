@@ -7,7 +7,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Field, SelectField } from "@/components/ui/form";
 import { getCharges, getPayments, getTenants } from "@/lib/data";
-import { amountStep, memberOptions } from "@/lib/format";
+import { amountStep, memberOptions, paidThroughByMember } from "@/lib/format";
 import type { PropertyDetail } from "@/lib/types";
 
 export async function BillingTab({
@@ -62,7 +62,7 @@ export async function BillingTab({
           </Card>
           <Card>
             <CardHeader title="Record a payment" />
-            <RecordPaymentForm propertyId={property.id} currency={currency} members={members} charges={charges} />
+            <RecordPaymentForm propertyId={property.id} currency={currency} members={members} charges={charges} paidThrough={paidThroughByMember(payments)} />
           </Card>
         </div>
       )}
