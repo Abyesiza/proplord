@@ -114,19 +114,20 @@ export default function Home() {
             <a href="#how" className="hover:text-foreground">How it works</a>
             <a href="#invite" className="hover:text-foreground">Tenants</a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             <ThemeToggle className="hidden sm:inline-flex" />
             <Link
               href="/login"
-              className="rounded-full px-3 py-2 text-sm font-semibold hover:text-link max-[380px]:hidden sm:px-5"
+              className="rounded-full px-2.5 py-2 text-sm font-semibold hover:text-link max-[340px]:hidden sm:px-5"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="whitespace-nowrap rounded-full bg-accent px-3 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary sm:px-5"
+              className="whitespace-nowrap rounded-full bg-accent px-3.5 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary sm:px-5"
             >
-              Get started
+              <span className="sm:hidden">Sign up</span>
+              <span className="hidden sm:inline">Get started</span>
             </Link>
           </div>
         </nav>
