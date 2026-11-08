@@ -35,7 +35,10 @@ export async function api<T>(
     const details = payload?.error?.details;
     const message = Array.isArray(details)
       ? details.join(", ")
-      : (payload?.error?.message ?? "Something went wrong");
+      : (payload?.error?.message ??
+        (res.status >= 500
+          ? `The server is not responding properly (error ${res.status}). Please try again shortly.`
+          : "Something went wrong"));
     throw new ApiError(res.status, message);
   }
   return payload.data as T;
